@@ -1,19 +1,3 @@
-YEAH. That's exactly the problem with most MediaPipe demos.
-
-Everyone does:
-
-* ✋ Move hand → particles
-* 🤏 Pinch → explosion
-* 👐 Two hands → scale
-
-It's getting repetitive.
-
-Instead, think about **interacting with the digital world the same way you interact with real objects.**
-
-Here are ideas that feel like actual products or experiences.
-
----
-
 # 1. Digital Pottery Wheel 🏺 (SUPER UNIQUE)
 
 No predefined gestures.
@@ -399,19 +383,3 @@ Walk through it.
 # 💀 One idea I'd build if I wanted recruiters to remember me
 
 ## **Desktop Ecosystem**
-
-Your **real desk becomes a living ecosystem**.
-
-* The webcam scans your desk and identifies books, mugs, keyboard, mouse, and plants.
-* Tiny AI creatures use those objects naturally:
-
-  * Ants carry food crumbs between your keyboard keys.
-  * Birds nest in your pen holder.
-  * Fish swim around your water bottle as if it's an aquarium.
-  * Vines slowly grow over the edges of your monitor.
-  * Rain collects in your coffee mug to form a tiny pond.
-* Rearranging real objects changes the ecosystem in real time. Move your mug, and the pond moves. Stack books, and creatures climb the new "mountain."
-
-This isn't based on fixed hand gestures—it's based on **scene understanding**, object detection, physics, and procedural animation. It's the kind of project that makes someone ask, "Wait... how did they do that?"
-
-That's the direction I'd recommend if your goal is a standout portfolio: move beyond gesture-triggered effects into **interactive worlds that understand and respond to the real environment.**
