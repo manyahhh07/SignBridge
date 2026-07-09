@@ -1,4 +1,4 @@
-# 1. Digital Pottery Wheel 🏺 (SUPER UNIQUE)
+# 1. Digital Pottery Wheel (SUPER UNIQUE)
 
 No predefined gestures.
 
