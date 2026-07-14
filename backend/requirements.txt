@@ -1,0 +1,19 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+pydantic-settings==2.5.2
+python-dotenv==1.0.1
+websockets==13.1
+python-multipart==0.0.9
+
+# MediaPipe: PINNED to 0.10.14 deliberately. Versions 0.10.18+ removed the
+# legacy `mp.solutions.holistic` API (used for pose+hands+face landmarks)
+# in favor of a different Tasks API. Do not bump this without rewriting
+# landmark_extractor.py.
+mediapipe==0.10.14
+opencv-python-headless==4.10.0.84
+numpy==1.26.4
+
+# Added in later steps (kept here so the file matches final scope):
+# torch==2.4.1
+# openai-whisper==20231117
