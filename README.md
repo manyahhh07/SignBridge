@@ -1,47 +1,44 @@
-## 📁 Project Structure
+# SignBridge AI — Target Structure
 
-```text
 signbridge-ai/
-│
-├── frontend/                     # React + TypeScript + TailwindCSS
+├── frontend/
+│   ├── public/assets/
 │   ├── src/
-│   │   ├── components/           # Reusable UI components
-│   │   │   ├── webcam/           # Live webcam & landmark overlay
-│   │   │   ├── translation/      # Sign ↔ Text interface
-│   │   │   ├── avatar/           # 3D sign language avatar
-│   │   │   ├── conversation/     # Live conversation mode
-│   │   │   ├── layout/           # Navbar, Sidebar, Theme
-│   │   │   └── ui/               # Shared UI components
-│   │   ├── hooks/                # Custom React hooks
-│   │   ├── pages/                # Application pages
-│   │   ├── services/             # API & WebSocket clients
-│   │   ├── store/                # Zustand state management
+│   │   ├── components/
+│   │   │   ├── webcam/          WebcamFeed, LandmarkOverlay
+│   │   │   ├── translation/     SignToText, TextToSign, ConfidenceMeter
+│   │   │   ├── avatar/          SignAvatar3D (Three.js)
+│   │   │   ├── conversation/    ConversationMode
+│   │   │   ├── layout/          Sidebar, Navbar, ThemeToggle
+│   │   │   └── ui/               shared buttons/cards/modals
+│   │   ├── hooks/                useWebcam, useWebSocket, useSpeechRecognition, useMediaPipe
+│   │   ├── pages/                Dashboard, LiveTranslate, Conversation, Settings
+│   │   ├── services/             api.ts, websocket.ts
+│   │   ├── store/                state management
 │   │   ├── types/
 │   │   ├── styles/
-│   │   ├── App.tsx
-│   │   └── main.tsx
-│   └── package.json
+│   │   ├── App.tsx, main.tsx
+│   ├── package.json, tailwind.config.ts, tsconfig.json
 │
-├── backend/                      # FastAPI Backend
+├── backend/
 │   ├── app/
-│   │   ├── api/                  # REST & WebSocket routes
-│   │   ├── core/                 # Configuration & logging
-│   │   ├── ml/                   # AI inference pipeline
-│   │   ├── speech/               # Speech-to-Text & Text-to-Speech
-│   │   ├── schemas/              # Pydantic models
-│   │   └── main.py
-│   ├── requirements.txt
-│   └── .env.example
+│   │   ├── main.py
+│   │   ├── api/                  routes_translate, routes_speech, routes_ws
+│   │   ├── core/                 config, logger
+│   │   ├── ml/                   landmark_extractor, sequence_buffer, sign_recognizer,
+│   │   │                         sentence_builder, model_loader
+│   │   ├── speech/               stt, tts
+│   │   └── schemas/               translation
+│   ├── requirements.txt, .env.example
 │
-├── models/                       # Model training & checkpoints
+├── models/
+│   ├── sign_recognition/         train.py, model_def.py, checkpoints/
+│   └── README.md
 │
-├── datasets/                     # Dataset loaders & preprocessing
+├── datasets/
+│   ├── loaders/                  wlasl_loader, base_loader (+ more per dataset)
+│   └── README.md
 │
-├── animations/                   # Gesture animation library
-│
-├── docs/                         # Architecture & API documentation
-│
-├── .gitignore
-├── docker-compose.yml
-└── README.md
-```
+├── animations/gesture_library/    real motion-capture / keyframe data
+├── docs/                          ARCHITECTURE, API, DEPLOYMENT, etc.
+├── .gitignore, docker-compose.yml, README.md
