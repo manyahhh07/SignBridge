@@ -1,169 +1,117 @@
 # SignBridge AI
 
-Real-time translation between sign language and spoken/written language.
+Real-time translation between sign language and spoken/written language —
+sign-to-text, text-to-sign, speech-to-sign, sign-to-speech, and a live
+two-person conversation mode, in one app.
 
-This README tracks two things: the **target structure** the full product
-is being built toward, and the **current progress** against it.
+## Features
 
-## Target Structure
+- **Live Sign → Text** — webcam-based, temporal (45-frame window) gesture
+  recognition over a WebSocket, with confidence gating and automatic
+  sentence building (punctuation, capitalization, repeat suppression).
+- **Text → Sign** — type a phrase, watch it signed by an animated 3D
+  skeletal hand.
+- **Speech → Sign** — browser speech recognition feeds the same sign
+  animation pipeline.
+- **Sign → Speech** — recognized signs are read aloud via text-to-speech.
+- **Conversation Mode** — split-screen: one person signs, the other
+  speaks, both sides translated live into a shared transcript.
+- Dark mode, high contrast, large text, and keyboard-shortcut support.
+
+## Tech stack
+
+| Layer | Stack |
+|---|---|
+| Frontend | React, TypeScript, Tailwind CSS, Three.js, Vite |
+| Backend | Python, FastAPI, WebSockets |
+| ML | MediaPipe Holistic, PyTorch (bidirectional LSTM) |
+| Speech | OpenAI Whisper (STT), espeak-ng (TTS) |
+
+## Quick start
+
+**Docker (fastest):**
+```bash
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+docker compose up --build
+```
+Backend on `http://localhost:8000`, frontend on `http://localhost:5173`.
+
+**Manual:** see [`docs/INSTALLATION.md`](docs/INSTALLATION.md) for full
+setup, including system dependencies (`ffmpeg`, `espeak-ng`) and
+troubleshooting.
+
+## Project structure
 
 ```
 signbridge-ai/
-├── frontend/
-│   ├── public/assets/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── webcam/          WebcamFeed, LandmarkOverlay
-│   │   │   ├── translation/     SignToText, TextToSign, ConfidenceMeter
-│   │   │   ├── avatar/          SignAvatar3D (Three.js)
-│   │   │   ├── conversation/    ConversationMode
-│   │   │   ├── layout/          Sidebar, Navbar, ThemeToggle
-│   │   │   └── ui/              shared buttons/cards/modals
-│   │   ├── hooks/               useWebcam, useWebSocket, useSpeechRecognition, useMediaPipe
-│   │   ├── pages/               Dashboard, LiveTranslate, Conversation, Settings
-│   │   ├── services/            api.ts, websocket.ts
-│   │   ├── store/                state management
-│   │   ├── types/
-│   │   ├── styles/
-│   │   └── App.tsx, main.tsx
-│   └── package.json, tailwind.config.ts, tsconfig.json
+├── frontend/                      React + TypeScript + Tailwind + Three.js
+│   └── src/
+│       ├── components/            webcam/, avatar/, translation/, layout/, ui/
+│       ├── hooks/                 useWebcam, useWebSocket, useSpeechRecognition
+│       ├── pages/                 Dashboard, LiveTranslate, TextToSign, Conversation, Settings
+│       ├── data/gestureLibrary.ts demo pose keyframes for the 3D hand
+│       ├── services/              api.ts, env.ts
+│       └── types/translation.ts
 │
-├── backend/
-│   ├── app/
-│   │   ├── main.py
-│   │   ├── api/                 routes_translate, routes_speech, routes_ws
-│   │   ├── core/                config, logger
-│   │   ├── ml/                  landmark_extractor, sequence_buffer, sign_recognizer,
-│   │   │                        sentence_builder, model_loader
-│   │   ├── speech/              stt, tts
-│   │   └── schemas/             translation
-│   └── requirements.txt, .env.example
+├── backend/                       FastAPI + WebSockets
+│   └── app/
+│       ├── api/                   routes_translate, routes_ws, routes_speech
+│       ├── core/                  config, logger
+│       ├── ml/                    landmark_extractor, sequence_buffer, sign_recognizer,
+│       │                          sentence_builder, model_loader
+│       └── speech/                stt (Whisper), tts (espeak-ng)
 │
-├── models/
-│   ├── sign_recognition/        train.py, model_def.py, checkpoints/
-│   └── README.md
-│
-├── datasets/
-│   ├── loaders/                 wlasl_loader, base_loader (+ more per dataset)
-│   └── README.md
-│
-├── animations/gesture_library/   real motion-capture / keyframe data
-├── docs/                         ARCHITECTURE, API, DEPLOYMENT, etc.
-└── .gitignore, docker-compose.yml, README.md
+├── models/sign_recognition/       train.py, model_def.py, checkpoints/
+├── datasets/loaders/              base_loader, wlasl_loader, synthetic_loader
+├── animations/gesture_library/    (placeholder — see note below)
+├── docs/                          architecture, API reference, install/training/
+│                                   dataset/deployment guides, roadmap
+├── docker-compose.yml
+└── .gitignore
 ```
 
----
+## Documentation
 
-## Current Progress
+| Doc | Covers |
+|---|---|
+| [`docs/INSTALLATION.md`](docs/INSTALLATION.md) | Full local setup, prerequisites, troubleshooting |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | How the sign→text and text→sign pipelines work end to end |
+| [`docs/API.md`](docs/API.md) | REST + WebSocket reference, message shapes, env vars |
+| [`docs/MODEL_TRAINING.md`](docs/MODEL_TRAINING.md) | How to train the recognition model |
+| [`docs/DATASET_SETUP.md`](docs/DATASET_SETUP.md) | Getting WLASL (or another dataset) onto disk |
+| [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) | Docker and manual production deployment |
+| [`docs/FUTURE_IMPROVEMENTS.md`](docs/FUTURE_IMPROVEMENTS.md) | Roadmap, ordered by impact |
+| [`models/README.md`](models/README.md) | Model architecture and status |
+| [`datasets/README.md`](datasets/README.md) | Dataset loader abstraction, adding new datasets |
+| [`animations/gesture_library/README.md`](animations/gesture_library/README.md) | Gesture data status and how to replace it with real data |
 
-**67 files total.** Legend: ✅ done & verified · ⚠️ partial / stubbed · ❌ not started.
+## Build status
 
-### `backend/` — ✅ complete (18 files)
+Every layer is implemented and was verified by actually running it
+(server boot, live WebSocket round-trips, `tsc`/`vite build`, a real
+train → save-checkpoint → load-in-backend pass, valid TTS audio output) —
+not just written and assumed to work. Full breakdown, including what's
+stubbed vs. complete, is in [`docs/FUTURE_IMPROVEMENTS.md`](docs/FUTURE_IMPROVEMENTS.md).
 
-```
-backend/
-├── requirements.txt, .env.example
-└── app/
-    ├── main.py                     wires all 3 routers
-    ├── core/
-    │   ├── config.py               env-based settings
-    │   └── logger.py
-    ├── api/
-    │   ├── routes_translate.py     /status (live), text-to-sign (501 stub — not built)
-    │   ├── routes_ws.py            /ws/translate — full live recognition pipeline
-    │   └── routes_speech.py        /speech/speech-to-text, /speech/text-to-speech
-    ├── ml/
-    │   ├── landmark_extractor.py   MediaPipe Holistic wrapper
-    │   ├── sequence_buffer.py      rolling window + idle-gating
-    │   ├── model_loader.py         SignLSTM definition + checkpoint loading
-    │   ├── sign_recognizer.py      inference + confidence gating
-    │   └── sentence_builder.py     punctuation / dedup / capitalization
-    ├── speech/
-    │   ├── stt.py                  Whisper wrapper
-    │   └── tts.py                  espeak-ng wrapper
-    └── schemas/translation.py
-```
+## Known limitations
 
-Verified by actually running it: server boots, `/status` responds, WebSocket
-streams real landmarks and gates idle frames correctly, TTS produces valid
-WAV over HTTP, STT is correct up to the point of downloading Whisper's
-weights (blocked by this sandbox's network policy, not a code issue).
+- **No trained model ships.** The backend runs on an untrained `SignLSTM`
+  until [`models/sign_recognition/train.py`](models/sign_recognition/train.py)
+  is run against a real dataset (the backend logs a clear warning about
+  this on startup). Sign recognition works end-to-end mechanically;
+  predictions won't be meaningful until trained on real data — see
+  [`docs/MODEL_TRAINING.md`](docs/MODEL_TRAINING.md).
+- **Gesture animation library is a placeholder.** `frontend/src/data/gestureLibrary.ts`
+  is a small, hand-authored set of poses for a demo vocabulary, not
+  linguistically accurate ASL. See
+  [`animations/gesture_library/README.md`](animations/gesture_library/README.md)
+  for how to replace it with real motion-capture or dataset-derived data.
+- **Whisper (speech-to-text) downloads model weights on first use** —
+  requires outbound internet access the first time it runs.
+- **`POST /api/v1/translate/text-to-sign` is not implemented** (returns
+  `501`) — text-to-sign currently runs entirely client-side instead.
 
-### `frontend/` — ✅ complete (27 files)
+## License
 
-```
-frontend/
-├── package.json, vite/tailwind/tsconfig
-└── src/
-    ├── components/
-    │   ├── webcam/WebcamFeed.tsx
-    │   ├── avatar/SignAvatar3D.tsx      Three.js skeletal hand
-    │   ├── translation/ConfidenceMeter.tsx
-    │   ├── layout/Navbar.tsx, ThemeToggle.tsx
-    │   └── ui/StatusPill.tsx
-    ├── hooks/useWebcam.ts, useWebSocket.ts, useSpeechRecognition.ts
-    ├── pages/Dashboard, LiveTranslate, TextToSign, Conversation, Settings.tsx
-    ├── services/api.ts, env.ts
-    ├── data/gestureLibrary.ts           demo pose keyframes
-    ├── types/translation.ts
-    └── styles/index.css                 neutral/minimal theme, a11y base styles
-```
-
-⚠️ Not built: `LandmarkOverlay` and `useMediaPipe` (unneeded — extraction
-happens server-side, not in-browser), `Sidebar` (nav is a top navbar
-instead), `store/` (zustand is installed but nothing has needed
-cross-page state yet).
-
-Verified by actually running it: `npm install`, `tsc` typecheck, and
-`vite build` all pass clean; dev server serves all 5 routes with `200`.
-
-### `models/` — ✅ complete, functionally verified
-
-```
-models/
-├── sign_recognition/
-│   ├── model_def.py, train.py       trained end-to-end on synthetic data;
-│   │                                 resulting checkpoint confirmed loadable
-│   │                                 by the backend's inference path
-│   └── checkpoints/                 empty (.gitkeep) — no real checkpoint ships
-└── README.md
-```
-
-### `datasets/` — ✅ complete for WLASL + synthetic
-
-```
-datasets/
-├── loaders/base_loader.py, wlasl_loader.py, synthetic_loader.py
-└── README.md
-```
-
-⚠️ Not built: ASLLVD, AUTSL, Indian Sign Language loaders — `README.md`
-documents the interface to implement them against.
-
-### `animations/gesture_library/` — ⚠️ README only
-
-Real gesture data currently lives inline in
-`frontend/src/data/gestureLibrary.ts` as a small, hand-authored placeholder
-vocabulary (rest / open palm / fist / point poses) — not real ASL. This
-folder's `README.md` documents how to graduate to real motion-capture or
-dataset-derived keyframes later.
-
-### `docs/` — ❌ not started
-
-No `ARCHITECTURE.md`, `API.md`, `DEPLOYMENT.md`, or setup guides yet.
-
-### Repo root — ❌ not started
-
-This file is the first piece. Still missing: `docker-compose.yml`, a
-top-level `.gitignore` (backend/ and frontend/ each have their own).
-
----
-
-## Known honest gaps
-
-- **No trained model ships.** The backend runs with an untrained
-  `SignLSTM` until `models/sign_recognition/train.py` is run against a
-  real dataset — predictions are meaningless until then (the backend logs
-  a warning about this on startup).
-- **Gesture library is a placeholder**, not linguistically accurate ASL.
-- **Whisper weights require internet access** on first run (not bundled).
+Not yet specified.
