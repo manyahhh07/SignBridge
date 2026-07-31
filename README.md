@@ -114,4 +114,4 @@ stubbed vs. complete, is in [`docs/FUTURE_IMPROVEMENTS.md`](docs/FUTURE_IMPROVEM
 
 ## License
 
-Not yet specified.
+MIT Manya Singh
