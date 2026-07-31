@@ -113,5 +113,4 @@ stubbed vs. complete, is in [`docs/FUTURE_IMPROVEMENTS.md`](docs/FUTURE_IMPROVEM
   `501`) — text-to-sign currently runs entirely client-side instead.
 
 ## License
-
 MIT Manya Singh
