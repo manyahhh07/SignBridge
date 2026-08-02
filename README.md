@@ -5,7 +5,6 @@ sign-to-text, text-to-sign, speech-to-sign, sign-to-speech, and a live
 two-person conversation mode, in one app.
 
 ---
-
 ## Table of contents
 
 - [Features](#features)
