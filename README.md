@@ -358,4 +358,4 @@ for details.
 
 ## License
 
-Not yet specified.
+MIT License © Manya Singh
