@@ -109,7 +109,6 @@ Sentence Builder (dedup, punctuation, capitalization)
 Live prediction streamed back to frontend — sentence rendered in real time
 ```
 
-
 ---
 
 ## Tech Stack
