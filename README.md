@@ -35,6 +35,8 @@ Built with **Python + FastAPI** and **React 18 + TypeScript**, focused on real-t
 
 ## Core Modules
 
+### Screenshots
+
 ### Live Sign → Text
 
 Features:
